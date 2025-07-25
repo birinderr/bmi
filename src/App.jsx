@@ -1,7 +1,10 @@
 import React, { useState } from "react";
-import { Calculator, Heart, BarChart3, User, Scale, Ruler, Info, RotateCcw, TrendingUp } from "lucide-react";
+import {
+  Calculator, Heart, BarChart3, User, Scale,
+  Ruler, Info, RotateCcw, TrendingUp, Moon, Sun
+} from "lucide-react";
 
-export default function BMICalculator() {
+export default function App() {
   const [weight, setWeight] = useState("");
   const [height, setHeight] = useState("");
   const [age, setAge] = useState("");
@@ -10,56 +13,52 @@ export default function BMICalculator() {
   const [bmi, setBmi] = useState(null);
   const [category, setCategory] = useState("");
   const [showTable, setShowTable] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
 
   const healthTips = {
     Underweight: {
       text: "You're underweight. Consider a nutritious, calorie-rich diet with healthy fats and proteins.",
-      color: "text-yellow-600",
-      bg: "bg-yellow-50",
-      border: "border-yellow-200"
+      color: darkMode ? "text-yellow-400" : "text-yellow-600",
+      bg: darkMode ? "bg-yellow-900/20" : "bg-yellow-50",
+      border: darkMode ? "border-yellow-500/30" : "border-yellow-200"
     },
     Normal: {
       text: "Excellent! You're maintaining a healthy weight. Keep up the good work!",
-      color: "text-green-600",
-      bg: "bg-green-50",
-      border: "border-green-200"
+      color: darkMode ? "text-green-400" : "text-green-600",
+      bg: darkMode ? "bg-green-900/20" : "bg-green-50",
+      border: darkMode ? "border-green-500/30" : "border-green-200"
     },
     Overweight: {
       text: "You are slightly overweight. Consider regular exercise and a balanced diet.",
-      color: "text-orange-600",
-      bg: "bg-orange-50",
-      border: "border-orange-200"
+      color: darkMode ? "text-orange-400" : "text-orange-600",
+      bg: darkMode ? "bg-orange-900/20" : "bg-orange-50",
+      border: darkMode ? "border-orange-500/30" : "border-orange-200"
     },
     Obese: {
       text: "BMI is in the obese range. Consider consulting a healthcare provider for guidance.",
-      color: "text-red-600",
-      bg: "bg-red-50",
-      border: "border-red-200"
+      color: darkMode ? "text-red-400" : "text-red-600",
+      bg: darkMode ? "bg-red-900/20" : "bg-red-50",
+      border: darkMode ? "border-red-500/30" : "border-red-200"
     },
   };
 
   const calculateBMI = () => {
     const w = parseFloat(weight);
     const h = parseFloat(height);
-
     if (!w || !h || w <= 0 || h <= 0) {
       setBmi(null);
       setCategory("Please enter valid inputs.");
       return;
     }
-
     let bmiValue = 0;
-
     if (unit === "metric") {
       const heightInMeters = h / 100;
       bmiValue = w / (heightInMeters * heightInMeters);
     } else {
       bmiValue = (w / (h * h)) * 703;
     }
-
     bmiValue = bmiValue.toFixed(1);
     setBmi(bmiValue);
-
     if (bmiValue < 18.5) setCategory("Underweight");
     else if (bmiValue < 24.9) setCategory("Normal");
     else if (bmiValue < 29.9) setCategory("Overweight");
@@ -76,14 +75,6 @@ export default function BMICalculator() {
     setCategory("");
   };
 
-  const getCategoryColor = () => {
-    if (category === "Underweight") return "bg-yellow-500";
-    if (category === "Normal") return "bg-green-500";
-    if (category === "Overweight") return "bg-orange-500";
-    if (category === "Obese") return "bg-red-500";
-    return "bg-gray-300";
-  };
-
   const getBMIPosition = () => {
     if (!bmi) return 0;
     const bmiNum = parseFloat(bmi);
@@ -94,21 +85,47 @@ export default function BMICalculator() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4">
+    <div className={`min-h-screen transition-colors duration-300 p-4 ${
+      darkMode 
+        ? 'bg-gray-900 text-white' 
+        : 'bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 text-gray-900'
+    }`}>
       <div className="max-w-4xl mx-auto">
+
+        {/* Dark Mode Toggle */}
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            className={`px-4 py-2 rounded-full text-sm shadow transition-all flex items-center gap-2 ${
+              darkMode 
+                ? 'bg-gray-700 text-white hover:bg-gray-600' 
+                : 'bg-white text-gray-800 hover:bg-gray-100'
+            }`}
+          >
+            {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            {darkMode ? "Light Mode" : "Dark Mode"}
+          </button>
+        </div>
+
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mb-4">
             <Calculator className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">BMI Calculator</h1>
-          <p className="text-gray-600">Calculate your Body Mass Index and get health insights</p>
+          <h1 className="text-4xl font-bold">BMI Calculator</h1>
+          <p className={`${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+            Calculate your Body Mass Index and get health insights
+          </p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
-          {/* Input Form */}
-          <div className="bg-white/70 backdrop-blur-lg rounded-2xl shadow-xl p-8 border border-white/50">
-            <h2 className="text-xl font-semibold text-gray-800 mb-6 flex items-center">
+          {/* Form Section */}
+          <div className={`rounded-2xl shadow-xl p-8 border transition-colors ${
+            darkMode 
+              ? 'bg-gray-800 border-gray-700' 
+              : 'bg-white/70 backdrop-blur-lg border-white/50'
+          }`}>
+            <h2 className="text-xl font-semibold mb-6 flex items-center">
               <User className="w-5 h-5 mr-2 text-blue-600" />
               Personal Information
             </h2>
@@ -116,36 +133,30 @@ export default function BMICalculator() {
             <div className="space-y-6">
               {/* Unit Selection */}
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">Unit System</label>
+                <label className="block mb-2 text-sm font-medium">Unit System</label>
                 <div className="grid grid-cols-2 gap-2">
-                  <button
-                    onClick={() => setUnit("metric")}
-                    className={`p-3 rounded-lg border-2 transition-all ${
-                      unit === "metric"
-                        ? "border-blue-500 bg-blue-50 text-blue-700"
-                        : "border-gray-200 bg-white hover:border-gray-300"
-                    }`}
-                  >
-                    <div className="text-sm font-medium">Metric</div>
-                    <div className="text-xs text-gray-500">kg, cm</div>
-                  </button>
-                  <button
-                    onClick={() => setUnit("imperial")}
-                    className={`p-3 rounded-lg border-2 transition-all ${
-                      unit === "imperial"
-                        ? "border-blue-500 bg-blue-50 text-blue-700"
-                        : "border-gray-200 bg-white hover:border-gray-300"
-                    }`}
-                  >
-                    <div className="text-sm font-medium">Imperial</div>
-                    <div className="text-xs text-gray-500">lbs, inches</div>
-                  </button>
+                  {["metric", "imperial"].map((type) => (
+                    <button
+                      key={type}
+                      onClick={() => setUnit(type)}
+                      className={`p-3 rounded-lg border-2 transition-all ${
+                        unit === type
+                          ? `border-blue-500 ${darkMode ? 'bg-blue-900/30 text-blue-300' : 'bg-blue-50 text-blue-700'}`
+                          : `${darkMode ? 'border-gray-600 bg-gray-700/50 hover:border-gray-500' : 'border-gray-200 bg-white hover:border-gray-300'}`
+                      }`}
+                    >
+                      <div className="text-sm font-medium capitalize">{type}</div>
+                      <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        {type === "metric" ? "kg, cm" : "lbs, inches"}
+                      </div>
+                    </button>
+                  ))}
                 </div>
               </div>
 
               {/* Weight Input */}
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700 flex items-center">
+                <label className="block mb-2 text-sm font-medium flex items-center">
                   <Scale className="w-4 h-4 mr-1" />
                   Weight ({unit === "metric" ? "kg" : "lbs"})
                 </label>
@@ -154,13 +165,17 @@ export default function BMICalculator() {
                   value={weight}
                   onChange={(e) => setWeight(e.target.value)}
                   placeholder={unit === "metric" ? "Enter weight in kg" : "Enter weight in lbs"}
-                  className="w-full p-4 rounded-xl bg-white border border-gray-200 text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                  className={`w-full p-4 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all ${
+                    darkMode 
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                      : 'bg-white border-gray-200 text-gray-800'
+                  }`}
                 />
               </div>
 
               {/* Height Input */}
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700 flex items-center">
+                <label className="block mb-2 text-sm font-medium flex items-center">
                   <Ruler className="w-4 h-4 mr-1" />
                   Height ({unit === "metric" ? "cm" : "inches"})
                 </label>
@@ -169,28 +184,40 @@ export default function BMICalculator() {
                   value={height}
                   onChange={(e) => setHeight(e.target.value)}
                   placeholder={unit === "metric" ? "Enter height in cm" : "Enter height in inches"}
-                  className="w-full p-4 rounded-xl bg-white border border-gray-200 text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                  className={`w-full p-4 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all ${
+                    darkMode 
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                      : 'bg-white border-gray-200 text-gray-800'
+                  }`}
                 />
               </div>
 
               {/* Age and Gender Row */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block mb-2 text-sm font-medium text-gray-700">Age (optional)</label>
+                  <label className="block mb-2 text-sm font-medium">Age (optional)</label>
                   <input
                     type="number"
                     value={age}
                     onChange={(e) => setAge(e.target.value)}
                     placeholder="Age"
-                    className="w-full p-4 rounded-xl bg-white border border-gray-200 text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                    className={`w-full p-4 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all ${
+                      darkMode 
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                        : 'bg-white border-gray-200 text-gray-800'
+                    }`}
                   />
                 </div>
                 <div>
-                  <label className="block mb-2 text-sm font-medium text-gray-700">Gender (optional)</label>
+                  <label className="block mb-2 text-sm font-medium">Gender (optional)</label>
                   <select
                     value={gender}
                     onChange={(e) => setGender(e.target.value)}
-                    className="w-full p-4 rounded-xl bg-white border border-gray-200 text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                    className={`w-full p-4 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all ${
+                      darkMode 
+                        ? 'bg-gray-700 border-gray-600 text-white' 
+                        : 'bg-white border-gray-200 text-gray-800'
+                    }`}
                   >
                     <option value="">Select</option>
                     <option value="male">Male</option>
@@ -211,7 +238,11 @@ export default function BMICalculator() {
                 </button>
                 <button
                   onClick={resetAll}
-                  className="px-6 py-4 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition-all duration-200 flex items-center justify-center"
+                  className={`px-6 py-4 rounded-xl transition-all duration-200 flex items-center justify-center ${
+                    darkMode 
+                      ? 'bg-gray-600 hover:bg-gray-500 text-white' 
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                  }`}
                 >
                   <RotateCcw className="w-4 h-4" />
                 </button>
@@ -223,8 +254,12 @@ export default function BMICalculator() {
           <div className="space-y-6">
             {/* BMI Result */}
             {bmi && (
-              <div className="bg-white/70 backdrop-blur-lg rounded-2xl shadow-xl p-8 border border-white/50">
-                <h2 className="text-xl font-semibold text-gray-800 mb-6 flex items-center">
+              <div className={`rounded-2xl shadow-xl p-8 border transition-colors ${
+                darkMode 
+                  ? 'bg-gray-800 border-gray-700' 
+                  : 'bg-white/70 backdrop-blur-lg border-white/50'
+              }`}>
+                <h2 className="text-xl font-semibold mb-6 flex items-center">
                   <TrendingUp className="w-5 h-5 mr-2 text-green-600" />
                   Your BMI Result
                 </h2>
@@ -233,12 +268,12 @@ export default function BMICalculator() {
                   <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mb-4">
                     <span className="text-2xl font-bold text-white">{bmi}</span>
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-800">{category}</h3>
+                  <h3 className="text-2xl font-bold">{category}</h3>
                 </div>
 
                 {/* BMI Scale Visualization */}
                 <div className="mb-6">
-                  <div className="flex justify-between text-xs text-gray-600 mb-2">
+                  <div className={`flex justify-between text-xs mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                     <span>Underweight</span>
                     <span>Normal</span>
                     <span>Overweight</span>
@@ -246,11 +281,13 @@ export default function BMICalculator() {
                   </div>
                   <div className="relative h-4 bg-gradient-to-r from-yellow-400 via-green-500 via-orange-400 to-red-500 rounded-full overflow-hidden">
                     <div
-                      className="absolute top-0 w-1 h-full bg-white border-2 border-gray-800 rounded-full transform -translate-x-1/2 transition-all duration-500"
+                      className={`absolute top-0 w-1 h-full rounded-full transform -translate-x-1/2 transition-all duration-500 ${
+                        darkMode ? 'bg-white border-2 border-gray-300' : 'bg-white border-2 border-gray-800'
+                      }`}
                       style={{ left: `${getBMIPosition()}%` }}
                     />
                   </div>
-                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <div className={`flex justify-between text-xs mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                     <span>18.5</span>
                     <span>25</span>
                     <span>30</span>
@@ -260,7 +297,7 @@ export default function BMICalculator() {
 
                 {/* Health Tip */}
                 {healthTips[category] && (
-                  <div className={`p-4 rounded-xl ${healthTips[category].bg} ${healthTips[category].border} border`}>
+                  <div className={`p-4 rounded-xl border ${healthTips[category].bg} ${healthTips[category].border}`}>
                     <div className="flex items-start">
                       <Heart className={`w-5 h-5 mr-3 mt-0.5 ${healthTips[category].color}`} />
                       <div>
@@ -277,54 +314,66 @@ export default function BMICalculator() {
 
             {/* Error Message */}
             {category && !bmi && (
-              <div className="bg-red-50 border border-red-200 rounded-xl p-4">
-                <p className="text-red-600 text-center font-medium">{category}</p>
+              <div className={`rounded-xl p-4 border ${
+                darkMode 
+                  ? 'bg-red-900/20 border-red-500/30' 
+                  : 'bg-red-50 border-red-200'
+              }`}>
+                <p className={`text-center font-medium ${darkMode ? 'text-red-400' : 'text-red-600'}`}>
+                  {category}
+                </p>
               </div>
             )}
 
             {/* BMI Reference Table */}
-            <div className="bg-white/70 backdrop-blur-lg rounded-2xl shadow-xl p-8 border border-white/50">
+            <div className={`rounded-2xl shadow-xl p-8 border transition-colors ${
+              darkMode 
+                ? 'bg-gray-800 border-gray-700' 
+                : 'bg-white/70 backdrop-blur-lg border-white/50'
+            }`}>
               <button
                 onClick={() => setShowTable(!showTable)}
                 className="w-full flex items-center justify-between text-left"
               >
-                <h2 className="text-xl font-semibold text-gray-800 flex items-center">
+                <h2 className="text-xl font-semibold flex items-center">
                   <BarChart3 className="w-5 h-5 mr-2 text-blue-600" />
                   BMI Reference Guide
                 </h2>
-                <Info className={`w-5 h-5 text-gray-500 transform transition-transform ${showTable ? 'rotate-180' : ''}`} />
+                <Info className={`w-5 h-5 transform transition-transform ${
+                  showTable ? 'rotate-180' : ''
+                } ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
               </button>
 
               {showTable && (
                 <div className="mt-6">
-                  <div className="overflow-hidden rounded-xl border border-gray-200">
+                  <div className={`overflow-hidden rounded-xl border ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}>
                     <table className="w-full">
-                      <thead className="bg-gray-50">
+                      <thead className={darkMode ? 'bg-gray-700' : 'bg-gray-50'}>
                         <tr>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">BMI Range</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Category</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Color</th>
+                          <th className={`px-4 py-3 text-left text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>BMI Range</th>
+                          <th className={`px-4 py-3 text-left text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Category</th>
+                          <th className={`px-4 py-3 text-left text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Color</th>
                         </tr>
                       </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
+                      <tbody className={`divide-y ${darkMode ? 'bg-gray-800 divide-gray-600' : 'bg-white divide-gray-200'}`}>
                         <tr>
-                          <td className="px-4 py-3 text-sm text-gray-800">&lt; 18.5</td>
-                          <td className="px-4 py-3 text-sm text-gray-800">Underweight</td>
+                          <td className={`px-4 py-3 text-sm ${darkMode ? 'text-gray-300' : 'text-gray-800'}`}>&lt; 18.5</td>
+                          <td className={`px-4 py-3 text-sm ${darkMode ? 'text-gray-300' : 'text-gray-800'}`}>Underweight</td>
                           <td className="px-4 py-3"><div className="w-4 h-4 bg-yellow-400 rounded"></div></td>
                         </tr>
                         <tr>
-                          <td className="px-4 py-3 text-sm text-gray-800">18.5 – 24.9</td>
-                          <td className="px-4 py-3 text-sm text-gray-800">Normal weight</td>
+                          <td className={`px-4 py-3 text-sm ${darkMode ? 'text-gray-300' : 'text-gray-800'}`}>18.5 – 24.9</td>
+                          <td className={`px-4 py-3 text-sm ${darkMode ? 'text-gray-300' : 'text-gray-800'}`}>Normal weight</td>
                           <td className="px-4 py-3"><div className="w-4 h-4 bg-green-500 rounded"></div></td>
                         </tr>
                         <tr>
-                          <td className="px-4 py-3 text-sm text-gray-800">25 – 29.9</td>
-                          <td className="px-4 py-3 text-sm text-gray-800">Overweight</td>
+                          <td className={`px-4 py-3 text-sm ${darkMode ? 'text-gray-300' : 'text-gray-800'}`}>25 – 29.9</td>
+                          <td className={`px-4 py-3 text-sm ${darkMode ? 'text-gray-300' : 'text-gray-800'}`}>Overweight</td>
                           <td className="px-4 py-3"><div className="w-4 h-4 bg-orange-400 rounded"></div></td>
                         </tr>
                         <tr>
-                          <td className="px-4 py-3 text-sm text-gray-800">≥ 30</td>
-                          <td className="px-4 py-3 text-sm text-gray-800">Obese</td>
+                          <td className={`px-4 py-3 text-sm ${darkMode ? 'text-gray-300' : 'text-gray-800'}`}>≥ 30</td>
+                          <td className={`px-4 py-3 text-sm ${darkMode ? 'text-gray-300' : 'text-gray-800'}`}>Obese</td>
                           <td className="px-4 py-3"><div className="w-4 h-4 bg-red-500 rounded"></div></td>
                         </tr>
                       </tbody>
